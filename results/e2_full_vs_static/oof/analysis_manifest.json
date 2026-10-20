@@ -1,0 +1,24 @@
+{
+  "analysis": "ACDC five-fold out-of-fold",
+  "models": [
+    "E2-Temporal",
+    "E2-Static"
+  ],
+  "patients": 100,
+  "volumes_per_model": 200,
+  "primary_pairing_unit": "patient; ED and ES averaged within patient for All-phase tests",
+  "test": "paired two-sided Wilcoxon signed-rank with Pratt zero handling",
+  "effect_size": "matched-pairs rank-biserial correlation; positive favors E2-Temporal",
+  "primary_magnitude_estimate": "mean paired E2-Full minus E2-Static Dice difference",
+  "bootstrap": {
+    "unit": "patient",
+    "ED_ES_handling": "ED and ES Mean Dice averaged within patient before resampling",
+    "method": "nonparametric paired percentile bootstrap",
+    "replicates": 100000,
+    "seed": 42,
+    "confidence_level": 0.95
+  },
+  "multiple_testing": "Holm within each outcome family; one planned contrast, so adjusted equals raw p",
+  "omnibus_test": "not applicable for the two-model ablation",
+  "alpha": 0.05
+}

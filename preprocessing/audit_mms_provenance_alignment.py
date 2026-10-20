@@ -156,7 +156,7 @@ def main() -> None:
     result_files = {
         "Exp1": ROOT / "mms_external_validation/Exp1/metrics/external_volume_results.csv",
         "Exp2": ROOT / "mms_external_validation/Exp2/metrics/external_volume_results.csv",
-        "E2-Static": ROOT / "exp2_static_convlstm/mms_external_validation/E2-Static/metrics/external_volume_results.csv",
+        "E2-Static": ROOT / "exp2_static_shuffle_matched/mms_external_validation/E2-Static/metrics/external_volume_results.csv",
         "Exp3": ROOT / "mms_external_validation/Exp3/metrics/external_volume_results.csv",
     }
     expected_pairs = {(p, phase) for p in included for phase in ("ED", "ES")}

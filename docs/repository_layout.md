@@ -2,7 +2,8 @@
 
 This page describes every source/configuration group distributed in the
 publication-code repository. Data, labels, checkpoints, prediction arrays, and
-generated result tables are intentionally excluded.
+patient-level result rows are intentionally excluded. Selected aggregate
+statistical tables are included under `results/`.
 
 ## Experiment coverage
 
@@ -103,8 +104,20 @@ forward behavior while retaining the E2 training implementation.
 
 - `implementation_details.md`: short index to mandatory implementation facts.
 - `training_runs.md`: audited final and selected epochs for all folds.
+- `e2_ablation_results.md`: updated paired effects, bootstrap intervals,
+  Wilcoxon results, and vendor-stratified findings for the shuffled-order
+  E2-Static rerun.
 - `reproducibility.md`: complete cohorts, preprocessing, architectures,
   optimization, seeds, epochs, evaluation, software, hardware, results, and
   ablation-qualification record.
 - `repository_layout.md`: this file.
+
+## `results/`
+
+- `e2_full_vs_static/oof/`, `heldout/`, and `mms/`: analysis manifests,
+  outcome-level paired Wilcoxon tables, and primary bootstrap summaries.
+- `e2_full_vs_static/vendor/`: aggregate vendor-stratified Dice and HD95
+  tables with outcome-specific complete-pair counts.
+
+No patient-level paired rows are distributed.
 

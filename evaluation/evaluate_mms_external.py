@@ -18,7 +18,7 @@ from train_exp3_factorized import FactorizedUNet
 
 MODELS = {"Exp1": ("exp1_wolny_native", None),
           "Exp2": ("exp2_3dconvlstm", UNet3DConvLSTM),
-          "E2-Static": ("exp2_static_convlstm", StaticUNet3DConvLSTM),
+          "E2-Static": ("exp2_static_shuffle_matched", StaticUNet3DConvLSTM),
           "Exp3": ("exp3_factorized", FactorizedUNet)}
 METRICS = ("RV_Dice", "MYO_Dice", "LV_Dice", "Mean_Dice",
            "RV_HD95", "RV_ASD", "MYO_HD95", "MYO_ASD", "LV_HD95", "LV_ASD")
@@ -230,7 +230,7 @@ def main():
     parser.add_argument("--root",type=Path,default=root); parser.add_argument("--spatial_root",type=Path,default=root/"mms_preprocessed")
     parser.add_argument("--exp1_model_root",type=Path,default=root/"exp1_wolny_native")
     parser.add_argument("--exp2_model_root",type=Path,default=root/"exp2_3dconvlstm")
-    parser.add_argument("--exp2_static_model_root",type=Path,default=root/"exp2_static_convlstm")
+    parser.add_argument("--exp2_static_model_root",type=Path,default=root/"exp2_static_shuffle_matched")
     parser.add_argument("--exp3_model_root",type=Path,default=root/"exp3_factorized")
     parser.add_argument("--temporal_root",type=Path,default=root/"mms_temporal"); parser.add_argument("--exp1_h5_root",type=Path,default=root/"mms_exp1_h5")
     parser.add_argument("--output_root",type=Path,default=root/"mms_external_validation")

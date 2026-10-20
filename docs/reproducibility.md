@@ -1,8 +1,8 @@
 # Four-model reproducibility record
 
 This document describes the four completed configurations reported in the
-manuscript. It intentionally excludes incomplete exploratory jobs and the
-currently running shuffle-matched E2-Static sensitivity experiment.
+manuscript. It excludes incomplete exploratory jobs and superseded Static
+checkpoints.
 
 ## Reported configurations
 
@@ -10,7 +10,7 @@ currently running shuffle-matched E2-Static sensitivity experiment.
 |---|---|---:|---|---|
 | E1 | ED or ES volume; three-level Wolny 3D U-Net, 32/64/128 channels | 983,254 | Wolny `pytorch-3dunet` native trainer | `exp1_wolny_native/` |
 | E2-Full | ED-aligned 30-frame cine; 3D encoder/decoder with bottleneck bidirectional 3D ConvLSTM | 4,027,332 | `train_exp2_3dconvlstm.py` | `exp2_3dconvlstm/` |
-| E2-Static | Same trainable E2 architecture; separate 30-copy ED and 30-copy ES sequences | 4,027,332 | `train_exp2_3dconvlstm.py --static_input` | `exp2_static_convlstm/` |
+| E2-Static | Same trainable E2 architecture; separate 30-copy ED and 30-copy ES sequences | 4,027,332 | `train_exp2_3dconvlstm.py --static_input` | `exp2_static_shuffle_matched/` |
 | E3 | ED-aligned 30-frame cine; factorized spatial 3D plus temporal 1D convolutions | 1,517,124 | `train_exp3_factorized.py` | `exp3_factorized/` |
 
 Patient data, checkpoints, and probability arrays are not distributed through
@@ -45,6 +45,11 @@ for model fitting, fine-tuning, or checkpoint selection.
   1 LV, 2 MYO, 3 RV to this order.
 - Training patch: 8 x 128 x 128; stride: 4 x 64 x 64.
 - Supervision is restricted to ED and ES.
+- After patient-level foreground normalization, every temporal patch is
+  standardized once using a mean and standard deviation over all voxels in
+  its original 30-frame patch. For E2-Static, ED/ES selection and repetition
+  occur after this operation. Intermediate-frame images do not enter the
+  network, but they influence these two scalar statistics.
 - Basic augmentation: independent 0.5-probability flips along each spatial
   axis and a uniformly selected in-plane rotation of 0, 90, 180, or 270
   degrees. Temporal transformations are synchronized across all frames and
@@ -94,20 +99,19 @@ image access during feature extraction.
 
 ## Main-ablation implementation audit
 
-The completed E2-Full and E2-Static runs match in architecture, parameter
-count, folds, seed value, source patches, batch size, augmentation distribution,
-loss, optimizer, scheduler, stopping rule, supervision, and checkpoint rule.
-They do **not** have identical stochastic sample trajectories:
+The reported E2-Full and E2-Static runs match in architecture, parameter count,
+folds, seed value, source patches, shuffled sample ordering policy, batch size,
+augmentation distribution, joint ED/ES class-weighted mean loss, optimizer,
+scheduler, stopping rule, supervision, and checkpoint rule. Both visit every
+source patch once per epoch and perform one optimizer update for the jointly
+reduced ED/ES loss.
 
-- completed E2-Full used `DataLoader(shuffle=True)` and workers recreated each
-  epoch;
-- completed E2-Static used `PatientGroupedSampler(seed=42)` and persistent
-  workers to reduce repeated compressed-NIfTI I/O.
-
-Both visit every source patch once per epoch and perform the same number of
-optimizer updates, but ordering and augmentation RNG trajectories differ. This
-must be disclosed as a training-order sensitivity limitation; the completed
-ablation should not be described as differing *only* in temporal input.
+They do **not** establish identical augmentation random-number trajectories:
+E2-Full recreated data-loader workers each epoch, whereas the E2-Static rerun
+used persistent workers. This residual worker-lifecycle sensitivity must be
+disclosed. In addition, E2-Static uses full-cine patch normalization statistics
+as described above, so it should not be characterized as having no influence
+whatsoever from intermediate frames.
 
 The historical E2-Full loader behavior is selected explicitly in the current
 trainer with:
@@ -120,13 +124,13 @@ python train_exp2_3dconvlstm.py \
   --augmentation_policy basic
 ```
 
-The completed E2-Static behavior is selected with:
+The reported E2-Static behavior is selected with:
 
 ```bash
 python train_exp2_3dconvlstm.py \
   --fold 1 \
   --static_input \
-  --train_order patient_grouped \
+  --train_order shuffled \
   --worker_lifecycle persistent \
   --augmentation_policy basic
 ```
@@ -140,7 +144,7 @@ validation foreground MeanIoU.
 |---|---:|---:|---:|---:|---:|
 | E1 final/best | 93/65 | 76/48 | 109/81 | 101/82 | 88/76 |
 | E2-Full final/best | 110/83 | 88/61 | 126/99 | 150/139 | 113/86 |
-| E2-Static final/best | 91/64 | 91/64 | 88/70 | 67/40 | 82/55 |
+| E2-Static final/best | 104/77 | 89/71 | 121/103 | 79/61 | 85/58 |
 | E3 final/best | 108/99 | 101/83 | 102/75 | 85/58 | 62/44 |
 
 These values are read directly from the saved checkpoints and `history.json`
@@ -158,6 +162,13 @@ files by `verify_four_model_release.py`.
   tests with Holm adjustment.
 - E2 ablation: paired Wilcoxon and patient-level paired bootstrap estimates.
 
+For the shuffled-order E2-Static rerun, E2-Full minus E2-Static patient-level
+Mean Dice differences were 0.00065 (95% bootstrap CI -0.00896 to 0.00962) for
+OOF, 0.00812 (0.00403 to 0.01182) for ACDC test, and 0.00910 (0.00476 to
+0.01312) for M&M. Full performed better for 61%, 82%, and 78.1% of patients,
+respectively. See `docs/e2_ablation_results.md` and the aggregate tables under
+`results/e2_full_vs_static/`.
+
 The release verifier recomputes the following foreground Mean Dice values from
 the saved per-volume tables (100 ACDC OOF patients, 50 ACDC test patients, and
 320 M&M subjects):
@@ -166,7 +177,7 @@ the saved per-volume tables (100 ACDC OOF patients, 50 ACDC test patients, and
 |---|---:|---:|---:|
 | E1 | 0.7478 | 0.8030 | 0.6803 |
 | E2-Full | 0.8264 | 0.8338 | 0.6972 |
-| E2-Static | 0.8073 | 0.8059 | 0.6655 |
+| E2-Static | 0.8258 | 0.8257 | 0.6881 |
 | E3 | 0.8107 | 0.8252 | 0.6855 |
 
 These are ensemble results for the two evaluation cohorts: probabilities from

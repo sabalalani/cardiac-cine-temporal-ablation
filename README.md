@@ -25,6 +25,8 @@ in [docs/reproducibility.md](docs/reproducibility.md).
 
 See [docs/repository_layout.md](docs/repository_layout.md) for the purpose of
 every distributed file and a model-by-model coverage table.
+The updated paired E2 ablation is summarized in
+[docs/e2_ablation_results.md](docs/e2_ablation_results.md).
 
 ## Environment
 
@@ -41,10 +43,12 @@ repository root, expose the executable directories before invoking them:
 
 ```bash
 export PYTHONPATH="$PWD/training:$PWD/evaluation:$PYTHONPATH"
-python training/train_exp2_3dconvlstm.py --fold 1 --augmentation_policy basic
+python training/train_exp2_3dconvlstm.py --fold 1 \
+  --train_order shuffled --worker_lifecycle per_epoch \
+  --augmentation_policy basic
 python training/train_exp2_3dconvlstm.py --fold 1 --static_input \
-  --train_order patient_grouped --worker_lifecycle persistent \
-  --augmentation_policy basic --output_root exp2_static_convlstm
+  --train_order shuffled --worker_lifecycle persistent \
+  --augmentation_policy basic --output_root exp2_static_shuffle_matched
 python training/train_exp3_factorized.py --fold 1 --augmentation_policy basic
 ```
 
@@ -56,12 +60,17 @@ python training/prepare_exp1_wolny_native.py --augmentation_policy basic
 
 ## Important ablation qualification
 
-The completed E2-Full and E2-Static runs shared architecture, folds, seed,
-patches, augmentation distribution, loss, optimizer, scheduler, supervision,
-and checkpoint criterion. Their historical loader ordering differed: E2-Full
-used shuffled loading with per-epoch workers, whereas E2-Static used a
-patient-grouped sampler with persistent workers. This is documented as a
-training-order sensitivity limitation and must not be hidden.
+The reported E2-Full and rerun E2-Static models shared shuffled patch loading,
+architecture, folds, seed, patches, augmentation distribution, joint ED/ES
+loss, optimizer, scheduler, supervision, and checkpoint criterion. E2-Full
+recreated workers each epoch, whereas E2-Static retained persistent workers;
+the resulting augmentation random-number trajectories were therefore not
+guaranteed to be identical. This residual limitation must be disclosed.
+
+E2-Static received repeated ED or ES images, but patch standardization was
+computed from the original 30-frame patch before repetition. Intermediate
+frames therefore affected two scalar normalization statistics, although their
+images were not passed to the encoder or ConvLSTM.
 
 ## Verified aggregate results
 
@@ -69,7 +78,7 @@ training-order sensitivity limitation and must not be hidden.
 |---|---:|---:|---:|
 | E1 | 0.7478 | 0.8030 | 0.6803 |
 | E2-Full | 0.8264 | 0.8338 | 0.6972 |
-| E2-Static | 0.8073 | 0.8059 | 0.6655 |
+| E2-Static | 0.8258 | 0.8257 | 0.6881 |
 | E3 | 0.8107 | 0.8252 | 0.6855 |
 
 These correspond to OOF predictions and frozen five-checkpoint probability

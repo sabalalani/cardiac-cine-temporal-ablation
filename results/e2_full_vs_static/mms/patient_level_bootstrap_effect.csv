@@ -1,0 +1,2 @@
+outcome,contrast,n_patients,mean_paired_difference,bootstrap_95ci_lower,bootstrap_95ci_upper,median_paired_difference,patients_full_better,patients_tied,patients_static_better,proportion_full_better,bootstrap_win_proportion_95ci_lower,bootstrap_win_proportion_95ci_upper,bootstrap_method,bootstrap_replicates,bootstrap_seed
+patient ED/ES-averaged foreground Mean Dice,E2-Full minus E2-Static,320,0.009096675164570227,0.004756599999676169,0.013120243238710786,0.013721380621598944,250,0,70,0.78125,0.734375,0.825,paired nonparametric percentile bootstrap at patient level,100000,42

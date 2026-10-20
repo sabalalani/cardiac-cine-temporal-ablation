@@ -23,8 +23,8 @@ EXPECTED = {
         "final": [110, 88, 126, 150, 113], "best": [83, 61, 99, 139, 86],
     },
     "E2-Static": {
-        "root": ROOT / "exp2_static_convlstm", "parameters": 4_027_332,
-        "final": [91, 91, 88, 67, 82], "best": [64, 64, 70, 40, 55],
+        "root": ROOT / "exp2_static_shuffle_matched", "parameters": 4_027_332,
+        "final": [104, 89, 121, 79, 85], "best": [77, 71, 103, 61, 58],
     },
     "E3": {
         "root": ROOT / "exp3_factorized", "parameters": 1_517_124,
@@ -44,9 +44,9 @@ RESULTS = {
         "mms": ROOT / "mms_external_validation/Exp2/metrics/external_volume_results.csv",
     },
     "E2-Static": {
-        "oof": ROOT / "exp2_static_convlstm/cv_metrics/oof_volume_results.csv",
-        "test": ROOT / "exp2_static_convlstm/frozen_ensemble/heldout_ensemble/metrics/heldout_volume_results.csv",
-        "mms": ROOT / "exp2_static_convlstm/mms_external_validation/E2-Static/metrics/external_volume_results.csv",
+        "oof": ROOT / "exp2_static_shuffle_matched/cv_metrics/oof_volume_results.csv",
+        "test": ROOT / "exp2_static_shuffle_matched/frozen_ensemble/heldout_ensemble/metrics/heldout_volume_results.csv",
+        "mms": ROOT / "exp2_static_shuffle_matched/mms_external_validation/E2-Static/metrics/external_volume_results.csv",
     },
     "E3": {
         "oof": ROOT / "exp3_factorized/cv_metrics/oof_volume_results.csv",

@@ -27,7 +27,7 @@ from train_exp3_factorized import FactorizedUNet
 MODELS = {
     "Exp1": ("exp1_wolny_native", None),
     "Exp2": ("exp2_3dconvlstm", UNet3DConvLSTM),
-    "E2-Static": ("exp2_static_convlstm", StaticUNet3DConvLSTM),
+    "E2-Static": ("exp2_static_shuffle_matched", StaticUNet3DConvLSTM),
     "Exp3": ("exp3_factorized", FactorizedUNet),
 }
 METRICS = (
@@ -213,7 +213,7 @@ def main() -> None:
     parser.add_argument("--exp1_model_root", type=Path, default=repo_root / "exp1_wolny_native")
     parser.add_argument("--exp2_model_root", type=Path, default=repo_root / "exp2_3dconvlstm")
     parser.add_argument("--exp2_static_model_root", type=Path,
-                        default=repo_root / "exp2_static_convlstm")
+                        default=repo_root / "exp2_static_shuffle_matched")
     parser.add_argument("--exp3_model_root", type=Path, default=repo_root / "exp3_factorized")
     parser.add_argument("--gpu", default="0")
     parser.add_argument("--check_only", action="store_true")

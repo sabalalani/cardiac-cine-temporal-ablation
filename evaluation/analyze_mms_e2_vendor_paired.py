@@ -9,10 +9,10 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parent.parent
-OUTPUT = ROOT / "mms_e2_vendor_paired_analysis"
+OUTPUT = ROOT / "mms_e2_vendor_paired_shuffle_matched_analysis"
 PATHS = {
     "E2-Full": ROOT / "mms_external_validation/Exp2/metrics/external_volume_results.csv",
-    "E2-Static": ROOT / "exp2_static_convlstm/mms_external_validation/E2-Static/metrics/external_volume_results.csv",
+    "E2-Static": ROOT / "exp2_static_shuffle_matched/mms_external_validation/E2-Static/metrics/external_volume_results.csv",
 }
 VENDORS = ("Canon", "GE", "Philips", "Siemens")
 OUTCOMES = {

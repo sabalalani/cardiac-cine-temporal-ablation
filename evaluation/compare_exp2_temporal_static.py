@@ -226,18 +226,18 @@ def save_analysis(name: str, frames: dict[str, pd.DataFrame], output: Path,
 
 
 def main() -> None:
-    base = ROOT / "exp2_temporal_vs_static_analysis"
+    base = ROOT / "exp2_full_vs_static_shuffle_matched_analysis"
     save_analysis("ACDC five-fold out-of-fold", {
         MODELS[0]: load(ROOT / "exp2_3dconvlstm/cv_metrics/oof_volume_results.csv", MODELS[0], 100),
-        MODELS[1]: load(ROOT / "exp2_static_convlstm/cv_metrics/oof_volume_results.csv", MODELS[1], 100),
+        MODELS[1]: load(ROOT / "exp2_static_shuffle_matched/cv_metrics/oof_volume_results.csv", MODELS[1], 100),
     }, base / "oof")
     save_analysis("ACDC frozen held-out ensemble", {
         MODELS[0]: load(ROOT / "exp2_3dconvlstm/heldout_ensemble/metrics/heldout_volume_results.csv", MODELS[0], 50),
-        MODELS[1]: load(ROOT / "exp2_static_convlstm/frozen_ensemble/heldout_ensemble/metrics/heldout_volume_results.csv", MODELS[1], 50),
+        MODELS[1]: load(ROOT / "exp2_static_shuffle_matched/frozen_ensemble/heldout_ensemble/metrics/heldout_volume_results.csv", MODELS[1], 50),
     }, base / "heldout")
-    save_analysis("M&Ms post hoc external robustness evaluation", {
+    save_analysis("M&Ms external validation", {
         MODELS[0]: load(ROOT / "mms_external_validation/Exp2/metrics/external_volume_results.csv", MODELS[0], 320, True),
-        MODELS[1]: load(ROOT / "exp2_static_convlstm/mms_external_validation/E2-Static/metrics/external_volume_results.csv", MODELS[1], 320, True),
+        MODELS[1]: load(ROOT / "exp2_static_shuffle_matched/mms_external_validation/E2-Static/metrics/external_volume_results.csv", MODELS[1], 320, True),
     }, base / "mms", subgroup=True)
     print(f"Saved E2 temporal-versus-static paired analyses to {base}")
 

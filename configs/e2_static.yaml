@@ -16,6 +16,6 @@ training:
   weight_decay: 0.00001
   scheduler: {name: ReduceLROnPlateau, mode: max, factor: 0.2, patience: 8}
   checkpoint_metric: validation_foreground_MeanIoU
-  train_order: patient_grouped
+  train_order: shuffled
   worker_lifecycle: persistent
 
